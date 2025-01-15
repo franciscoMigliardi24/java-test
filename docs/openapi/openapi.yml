@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: "Products API"
+  description: "API para listar productos con descuentos aplicados según categoría y SKU."
+  version: "1.0.0"
+
+servers:
+  - url: "http://localhost:8080"
+    description: "Servidor local de desarrollo"
+
+paths:
+  /products:
+    get:
+      summary: "Lista de productos"
+      description: "Obtiene el listado de productos, con posibilidad de filtrar por categoría, ordenar, y paginar resultados. Aplica descuentos según reglas de negocio."
+      parameters:
+        - name: category
+          in: query
+          description: "Filtra la lista por categoría específica."
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: "Campo por el cual se debe ordenar la lista."
+          required: false
+          schema:
+            type: string
+            enum:
+              - sku
+              - price
+              - description
+              - category
+        - name: sortDirection
+          in: query
+          description: "Dirección del orden. Por defecto ascendente."
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: page
+          in: query
+          description: "Número de página para paginación (inicia en 1)."
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: size
+          in: query
+          description: "Tamaño de página (cantidad de productos por página)."
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '200':
+          description: "Lista de productos obtenida exitosamente"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                    description: "Número de página actual."
+                    example: 1
+                  size:
+                    type: integer
+                    description: "Tamaño de página utilizado."
+                    example: 10
+                  totalElements:
+                    type: integer
+                    description: "Total de productos disponibles para la consulta."
+                    example: 30
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sku:
+                          type: string
+                          description: "Identificador único del producto (SKU)."
+                          example: "SKU0001"
+                        description:
+                          type: string
+                          description: "Descripción del producto."
+                          example: "Wireless Mouse with ergonomic design"
+                        category:
+                          type: string
+                          description: "Categoría del producto."
+                          example: "Electronics"
+                        originalPrice:
+                          type: number
+                          format: float
+                          description: "Precio original antes de aplicar descuento."
+                          example: 19.99
+                        discountApplied:
+                          type: number
+                          format: float
+                          description: "Porcentaje de descuento aplicado (0 a 1)."
+                          example: 0.15
+                        finalPrice:
+                          type: number
+                          format: float
+                          description: "Precio final tras aplicar el descuento."
+                          example: 16.99
+        '400':
+          description: "Petición inválida (ej. parámetros incorrectos)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid sort parameter"
+        '500':
+          description: "Error interno del servidor"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
