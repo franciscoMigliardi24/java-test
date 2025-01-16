@@ -13,21 +13,9 @@
 	<version>0.0.1</version>
 	<name>java-test</name>
 	<description>Demo project for Spring Boot</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<openapi-generator.version>7.2.0</openapi-generator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -54,6 +42,22 @@
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>8.0.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.17.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -79,6 +83,67 @@
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>${openapi-generator.version}</version>
+				<executions>
+					<execution>
+						<id>test-service-api-codegen</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/docs/openapi/openapi.yml</inputSpec>
+							<addCompileSourceRoot>true</addCompileSourceRoot>
+							<generatorName>spring</generatorName>
+
+							<apiPackage>com.example.java_test.generated.infrastructure.controllers.rest</apiPackage>
+							<modelPackage>com.example.java_test.generated.infrastructure.controllers.rest.model</modelPackage>
+
+							<typeMappings>OffsetDateTime=java.time.LocalDateTime</typeMappings>
+							<importMappings>java.time.OffsetDateTime=java.time.LocalDateTime</importMappings>
+							<generateSupportingFiles>false</generateSupportingFiles>
+							<additionalProperties>useTags=true</additionalProperties>
+							<openapiNormalizer>SET_TAGS_TO_OPERATIONID=true</openapiNormalizer>
+							<modelNameSuffix>Dto</modelNameSuffix>
+
+							<globalProperties>
+								<modelDocs>false</modelDocs>
+								<apiDocs>false</apiDocs>
+								<apiTests>false</apiTests>
+							</globalProperties>
+
+							<configOptions>
+								<library>spring-boot</library>
+								<dateLibrary>java8</dateLibrary>
+								<useSpringBoot3>true</useSpringBoot3>
+								<javaVersion>${java.version}</javaVersion>
+								<requestMappingMode>none</requestMappingMode>
+								<javaPostProcessors>true</javaPostProcessors>
+								<reactive>false</reactive>
+								<interfaceOnly>true</interfaceOnly>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<useBeanValidation>true</useBeanValidation>
+								<performBeanValidation>true</performBeanValidation>
+								<useSwaggerUI>false</useSwaggerUI>
+								<documentationProvider>none</documentationProvider>
+								<annotationLibrary>none</annotationLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.10</version>
+				<configuration combine.children="append">
+					<excludes>
+						<exclude>com/example/java_test/generated/infrastructure/controllers/rest/model/*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

@@ -18,7 +18,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleUnauthorized(Exception ex) {
+    public ResponseEntity<Object> handle(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)

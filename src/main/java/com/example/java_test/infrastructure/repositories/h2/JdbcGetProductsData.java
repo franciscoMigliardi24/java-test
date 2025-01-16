@@ -35,7 +35,7 @@ public class JdbcGetProductsData implements GetProductsData {
     @Override
     public List<Product> findProducts(ProductsQuery query) {
         String direction = "ASC";
-        if ("desc".equalsIgnoreCase(query.sortDirection())) {
+        if ("desc".equalsIgnoreCase(query.paginator().sortDirection())) {
             direction = "DESC";
         }
 
@@ -57,12 +57,11 @@ public class JdbcGetProductsData implements GetProductsData {
                 + "OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("category", query.category());
-        params.put("orderBy", query.sort());
-        params.put("offset", (query.page() - 1) * query.size());
-        params.put("limit", query.size());
+        params.put("category", query.category().name());
+        params.put("orderBy", query.paginator().sort());
+        params.put("offset", (query.paginator().page() - 1) * query.paginator().size());
+        params.put("limit", query.paginator().size());
 
-        // 5) Ejecutamos la consulta con un RowMapper que mapee al objeto Product
         return namedParameterJdbcTemplate.query(sql, params, (rs, rowNum) -> {
             Product products = new Product(
                     rs.getString("sku"),
